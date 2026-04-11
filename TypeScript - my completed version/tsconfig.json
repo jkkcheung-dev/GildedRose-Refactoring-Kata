@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "target": "ES2022",
+    "lib": [
+      "ES2022"
+    ],
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
+    "resolvePackageJsonImports": true,
+    "resolvePackageJsonExports": true
+  },
+  "include": [
+    "app/**/*.ts",
+    "test/**/*.ts"
+  ],
+  "exclude": [
+    "coverage",
+    "node_modules"
+  ]
+}
