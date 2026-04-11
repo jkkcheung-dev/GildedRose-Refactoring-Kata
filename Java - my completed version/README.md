@@ -1,38 +1,118 @@
-# This directory is my finished work, visit Java directory for the challenge starting point
+# Gilded Rose Refactoring Challenge
 
-## My thought on approaching this refactoring challenge
+This directory contains my finished solution.  
+Visit the `Java` directory for the original challenge starting point.
 
-1. Watch this video first to get an idea about what this challenge want you to do : https://www.youtube.com/watch?v=8bZh5LMaSmE One assumption is that the business logic written in messy codes is actually functioning.
+## Approach
 
-   All our work is around this working but messy code.
+This README is mainly for my own reference: how I approached the refactoring, what I learned, and what I would do again in a similar interview or kata setting.
 
-   Speaker was fantastic, but be careful.
+## Key ideas
 
-   The challenge shown on the video was simpler than this one, and probably the one that you may encounter in tech interview. Tests are already written for you, and also the speaker ignored the edge case, like Quality could not be negative when being decreased, and could not be more than 50 when being increased. The interesting part was the tests shown on the video all passed. This brings us Point 2
+1. Start by understanding what the challenge is really asking.
 
-2. We need to get ourselves accurate and meaningful unit tests. Ask clarifying questions during interview when you find requirement doc something seems missing or some words confusing. That is on purpose. Also make sure to consider edge case, or you will only have seemingly working unit tests.
+   A useful introduction is this talk by Emily Bache:  
+   https://www.youtube.com/watch?v=8bZh5LMaSmE
 
-3. If AI is allowed, open the project in VS Code or other IDE or CLI tools, write your own test first following the requirement doc, then ask AI to cover any edge case you miss. No need to move forward before all the tests except the ones for 'Conjured' are green. Since completing the business logic for 'Conjured' is exactly your task
+   One important assumption is that the original messy business logic is already functioning. The goal is not to redesign the requirements from scratch, but to refactor working code safely.
 
-4. We have 2 ways here.
-   1. is to ignore the existing logic, directly rewrite the entire business logic for all the magic strings, make a method for each of them, then do a little refactoring on each method first
-   2. is to copy and paste the full original method block for each magic string and refactor them one by one. Manually replace the item name with each string and evaluate the boolean expression. all the way to a state that you can no longer simplify. reference : https://www.youtube.com/watch?v=eKHzZ-EooTg
-   Each way has their pros and cons. Anyway, at this stage you now should have a method for each string, and can replace 99% of the original messy code.
+   That said, be careful: the version shown in the video is simpler than this Java version. In particular, edge cases around `quality` are easy to miss. For example:
+   - `quality` should never become negative.
+   - `quality` should never become greater than 50.
+   - Even if sample tests pass, that does not mean the behavior is fully correct.
 
-5. Now you may notice there are some duplication on business logic for each string, but keep that, you can get yourself a wrong abstraction and work on top of that if you abstract too early. Wait until you at least have a fundamental OO structure
+2. Write accurate and meaningful unit tests first.
 
-6. Now you should notice each method for each string looks like some classes with the same method name, while different implementation. Create a class for each of the string, and move the business logic into a member method of each. Update codes accordingly in the original main method. Now we basically have a switch case to call the method of corresponding class
+   If this is done in an interview, ask clarifying questions whenever the requirement document is vague or incomplete. That ambiguity is often intentional.
 
-7. Now you notice each class looks like an item, so why not make them children of the Item ? We make a shallow and narrow inheritance. Now you notice that GildedRose class is actually using Item and its children to do some work. So the Item is just a role, it serves as a Factory pattern.
+   Also, do not trust “mostly passing” tests too early. If edge cases are missing, your tests may only prove that the code works in common paths, not that it is correct.
 
-8. Things getting tricky here. We should be able to update the Item class itself to add an overriding method for children, but we cannot alter Item class in this modern gilded rose challenge. Otherwise, we can make the switch statement shorter by using just 1 method call
+3. If AI assistance is allowed, use it carefully.
 
-9. Now you might want to create a separate Factory class and an Updater class (won't be necessary if Item class contains the updateQuality method that children can override)
+   A practical workflow is:
+   - Open the project in VS Code, IntelliJ, or CLI tools.
+   - Write your own tests first based on the requirement document.
+   - Then use AI to help identify missing edge cases.
 
-10. If possible to use a syntax that create a class by a string in runtime and then instantiate the class, you can even use a map data structure instead of hard-coded new statement for different classes in Factory
- Edit : A cleaner and safer modern Java approach is to store constructor functions in a map, then call them directly instead of converting strings into class names and instantiating with reflection
+   Before implementing `Conjured`, all other tests should already be green. That gives you a safe baseline before making the intended change.
 
-11. Finally, the code structure is clean, we spend 95% of time to make future change easier, then 5% time to make new easy changes
+## Refactoring strategy
 
-12. you can create the Conjured class and add the simple specific logic from the requirement doc. All the tests should pass now
+4. There are at least two valid ways to begin.
 
+   **Option 1:** Ignore the old structure and rewrite the business rules in a cleaner way for each item type.
+
+   **Option 2:** Copy the original logic for each magic string into separate blocks, then simplify each branch step by step by manually evaluating the conditions.
+
+   A useful reference for the second style is:  
+   https://www.youtube.com/watch?v=eKHzZ-EooTg
+
+   Both approaches have trade-offs. Either way, the goal at this stage is the same: isolate the behavior for each item type so most of the original nested logic can disappear.
+
+5. Do not abstract too early.
+
+   Once the item-specific methods are separated, you will probably notice duplication. That is normal.
+
+   Keep the duplication for a while. Premature abstraction can create the wrong design and make later refactoring harder. Wait until the item behaviors are clearly visible.
+
+6. Move each behavior into its own class.
+
+   At this point, each item-specific method starts to look like a class with the same public operation but different internal logic.
+
+   That is a good signal to:
+   - create one class per item type
+   - move the business rules into that class
+   - update the main flow so it delegates to the correct implementation
+
+   Initially, this may still look like a `switch`-based dispatch.
+
+7. Introduce a shallow inheritance structure.
+
+   Once the separate classes exist, they naturally resemble different kinds of items. So it makes sense to model them as children of `Item`.
+
+   This gives a narrow and shallow inheritance structure, which is appropriate here. The code becomes easier to read because each class represents one business concept.
+
+8. Be aware of the challenge constraint.
+
+   In this version of the kata, we should not modify the `Item` class itself.
+
+   In a normal OO design, I would prefer `Item` to define an overridable method such as `updateQuality()`, then let subclasses override it. But since `Item` is not supposed to change, that option is limited here.
+
+9. Add supporting structure when needed.
+
+   Because `Item` cannot be changed, it can be useful to introduce:
+   - an `ItemFactory`
+   - optionally an updater or dispatcher class
+
+   If `Item` were editable, some of this structure could be simplified.
+
+## Factory design
+
+10. Replace hard-coded construction with a map-based factory.
+
+   One idea is to map item names to classes and instantiate them dynamically at runtime.
+
+   That is possible, but a cleaner and safer modern Java approach is to store constructor functions in a map and call them directly, instead of using reflection.
+
+   In other words:
+   - avoid mapping strings to class-name strings
+   - avoid reflective instantiation unless it is really necessary
+   - prefer a map of constructor references
+
+   This keeps the code type-safe and easier to maintain.
+
+## Final result
+
+11. Most of the effort is not adding the new feature.
+
+   The real work is making future changes easier.
+
+   Roughly speaking:
+   - 95% of the effort is spent cleaning the structure
+   - 5% is spent adding the actual new behavior
+
+12. After the structure is clean, `Conjured` becomes easy.
+
+   At that point, you can create the `Conjured` class, implement the specific rules from the requirement document, and run the tests.
+
+   If the earlier refactoring was done carefully, all tests should pass.
