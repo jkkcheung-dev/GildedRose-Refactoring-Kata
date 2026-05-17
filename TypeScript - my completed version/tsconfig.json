@@ -8,6 +8,8 @@
     "moduleResolution": "nodenext",
     "strict": true,
     "noImplicitAny": false,
+    "rootDir": ".",
+    "outDir": "./dist",
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -24,6 +26,7 @@
   ],
   "exclude": [
     "coverage",
+    "dist",
     "node_modules"
   ]
 }

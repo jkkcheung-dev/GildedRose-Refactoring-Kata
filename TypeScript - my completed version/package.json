@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Gilded Rose kata in TypeScript",
   "scripts": {
-    "clean": "rimraf --glob \"app/**/*.js\" \"app/**/*.js.map\" \"test/**/*.js\" \"test/**/*.js.map\" vitest.config.js vitest.config.js.map vitest.config.mjs vitest.config.mjs.map coverage",
+    "clean": "rimraf --glob \"app/**/*.js\" \"app/**/*.js.map\" \"test/**/*.js\" \"test/**/*.js.map\" vitest.config.js vitest.config.js.map vitest.config.mjs vitest.config.mjs.map dist coverage",
     "prebuild": "npm run clean",
     "build": "tsc",
     "compile": "npm run build",
